@@ -1,173 +1,256 @@
-'use client'
-import { motion } from 'framer-motion'
-import { Particles } from "@/components/magicui/particles";
-import Link from "next/link";
-import Image from "next/image";
-import { useState, useEffect } from 'react';
-import Projects from '@/components/home/projects';
+'use client';
 
-export default function Home() {
-  const [isMobile, setIsMobile] = useState(false);
+import { useState, useEffect, useRef } from 'react';
+import { Particles } from "@/components/magicui/particles";
+import Projects from '@/components/home/projects';
+import Experience from '@/components/home/experience';
+
+const PHRASES = [
+  { pre: 'I ', hl: 'build', post: ' products for people.' },
+  { pre: 'I ', hl: 'founded', post: ' Epsilon @ Stuyvesant.' },
+  { pre: 'I ', hl: 'ship', post: ' things that matter.' },
+  { pre: 'I ', hl: 'love', post: ' hard problems.' },
+];
+
+function useCyclingText() {
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-      setIsMobile(window.innerWidth < 768);
-
+    const timer = setTimeout(() => {
+      const interval = setInterval(() => {
+        setVisible(false);
+        setTimeout(() => {
+          setIdx(i => (i + 1) % PHRASES.length);
+          setVisible(true);
+        }, 420);
+      }, 3000);
+      return () => clearInterval(interval);
+    }, 2000);
+    return () => clearTimeout(timer);
   }, []);
 
+  return { phrase: PHRASES[idx], visible };
+}
+
+function useScrollReveal() {
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+}
+
+export default function Home() {
+  const { phrase, visible } = useCyclingText();
+  useScrollReveal();
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   return (
-    <div>
-      <div className="h-screen flex flex-col items-center">
-        <Particles 
+    <>
+      {/* ── Hero ── */}
+      <section className="hero" id="hero">
+        <Particles
           className="absolute inset-0 z-0"
-          quantity={isMobile ? 30 : 100}
+          quantity={isMobile ? 20 : 70}
+          staticity={50}
           ease={80}
-          color="#000000"
-          size={1.5}
-          refresh
+          size={0.8}
+          color="#ffffff"
         />
-        <div className="h-full flex flex-col justify-center items-center min-h-[600px]">
-            <div className="relative">
-              <motion.p 
-                className="text-2xl md:text-4xl -mb-6 md:-mb-10 ml-1 md:ml-2 absolute left-0"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                { "HI 👋, I'M" }
-              </motion.p> 
-              <motion.p 
-                className="text-[80px] md:text-[125px] font-bold bg-clip-text text-transparent whitespace-nowrap"
+        <div className="hero-grid" />
+
+        <div className="hero-split">
+          {/* Left */}
+          <div className="hero-left">
+            <div className="hero-badge">
+              <span className="hero-badge-dot" />
+              Open to opportunities
+            </div>
+            <div className="hero-role">Software Engineer</div>
+            <h1 className="hero-name">
+              <span className="word"><span>Randall</span></span>
+              {' '}
+              <span className="word"><span>Sim.</span></span>
+            </h1>
+            <div className="hero-cycle-wrap">
+              <div
+                className="hero-cycle"
                 style={{
-                  backgroundImage: 'linear-gradient(90deg, #ff6b6b, #4ecdc4, #54a0ff, #ff6b6b)',
-                  backgroundSize: '300% 100%'
-                }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ 
-                  opacity: 1, 
-                  y: 0,
-                  backgroundPosition: ['300% 0%', '0% 0%']
-                }}
-                transition={{
-                  opacity: { duration: 0.5 },
-                  y: { duration: 0.5 },
-                  backgroundPosition: {
-                    duration: 15,
-                    ease: "linear",
-                    repeat: Infinity,
-                    repeatType: "loop"
-                  }
+                  transform: visible ? 'translateY(0)' : 'translateY(-110%)',
+                  opacity: visible ? 1 : 0,
+                  transition: 'transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease',
                 }}
               >
-                { "RANDY" }
-              </motion.p>
-              <div className="absolute right-0 mr-4 md:mr-6">
-                <motion.p 
-                  className="text-2xl md:text-4xl -mt-6 md:-mt-10 text-right"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                  CS @ <span className="font-bold text-[#4E3629]">BROWN</span>
-                </motion.p>
-                <motion.p 
-                  className="text-base md:text-lg text-right mt-1 text-gray-600 flex items-center justify-end gap-1"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                >
-                  (Incoming at 
-                  <svg className="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 0h11v11H0V0zm12 0h11v11H12V0zM0 12h11v11H0V12zm12 0h11v11H12V12z" fill="#F25022"/>
-                    <path d="M12 0h11v11H12V0z" fill="#7FBA00"/>
-                    <path d="M0 12h11v11H0V12z" fill="#00A4EF"/>
-                    <path d="M12 12h11v11H12V12z" fill="#FFB900"/>
-                  </svg>
-                  )
-                </motion.p>
+                {phrase.pre}
+                <span className="highlight">{phrase.hl}</span>
+                {phrase.post}
               </div>
             </div>
+            <p className="hero-sub">
+              CS student at Brown University — incoming at{' '}
+              <span style={{ display: 'inline-flex', alignItems: 'center', verticalAlign: 'middle', margin: '0 2px' }}>
+                <svg width="13" height="13" viewBox="0 0 23 23" fill="none" style={{ display: 'inline', verticalAlign: 'middle' }}>
+                  <path d="M0 0h11v11H0V0zm12 0h11v11H12V0zM0 12h11v11H0V12zm12 0h11v11H12V12z" fill="#F25022"/>
+                  <path d="M12 0h11v11H12V0z" fill="#7FBA00"/>
+                  <path d="M0 12h11v11H0V12z" fill="#00A4EF"/>
+                  <path d="M12 12h11v11H12V12z" fill="#FFB900"/>
+                </svg>
+              </span>
+              {' '}Microsoft. I love shipping things that matter to real communities.
+            </p>
+            <div className="hero-actions">
+              <a href="#projects" className="site-btn site-btn-solid">View Projects</a>
+              <a href="#about" className="site-btn site-btn-outline">About Me</a>
+            </div>
+            <div className="hero-stats">
+              <div className="hero-stat">
+                <span className="hero-stat-num">3,300+</span>
+                <span className="hero-stat-label">Daily active users</span>
+              </div>
+              <div className="hero-stat-divider" />
+              <div className="hero-stat">
+                <span className="hero-stat-num">400+</span>
+                <span className="hero-stat-label">Orgs managed</span>
+              </div>
+              <div className="hero-stat-divider" />
+              <div className="hero-stat">
+                <span className="hero-stat-num">3,000+</span>
+                <span className="hero-stat-label">Followers acquired</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: terminal card */}
+          <div className="hero-right">
+            <div className="terminal-card">
+              <div className="terminal-header">
+                <div className="terminal-dots">
+                  <div className="terminal-dot red" />
+                  <div className="terminal-dot yellow" />
+                  <div className="terminal-dot green" />
+                </div>
+                <span className="terminal-title">randallsim — projects</span>
+              </div>
+              <div className="terminal-body">
+                <div><span className="t-prompt">$ </span><span className="t-cmd">randall status</span></div>
+                <div className="t-spacer" />
+
+                <div className="terminal-status-row">
+                  <div className="status-dot live" />
+                  <span className="status-name">epsilon.stuysu.org</span>
+                  <span className="status-tag live">live</span>
+                </div>
+                <div className="terminal-status-row">
+                  <div className="status-dot live" />
+                  <span className="status-name">internships.dev</span>
+                  <span className="status-tag live">live</span>
+                </div>
+                <div className="terminal-status-row">
+                  <div className="status-dot shipped" />
+                  <span className="status-name">news-to-go</span>
+                  <span className="status-tag">shipped</span>
+                </div>
+
+                <div className="t-spacer" />
+                <div><span className="t-prompt">$ </span><span className="t-cmd">randall --stack</span></div>
+                <div className="t-spacer" />
+                <div><span className="t-key">frontend </span><span className="t-dim">→ </span><span className="t-val">React, TypeScript, Next.js</span></div>
+                <div><span className="t-key">backend  </span><span className="t-dim">→ </span><span className="t-val">Node.js, Python, Go, Rust</span></div>
+                <div><span className="t-key">infra    </span><span className="t-dim">→ </span><span className="t-val">Docker, PostgreSQL</span></div>
+                <div className="t-spacer" />
+                <div><span className="t-dim">{'// CS @ '}</span><span className="t-orange">Brown University</span><span className="t-dim">{" '28"}</span></div>
+                <div>
+                  <span className="t-prompt">$ </span>
+                  <span style={{ display: 'inline-block', width: 7, height: 13, background: '#4ade80', verticalAlign: 'middle', borderRadius: 1, animation: 'blink 1.2s step-end infinite' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="section-divider" />
+
+      {/* ── About ── */}
+      <div id="about">
+        <div className="site-section">
+          <p className="section-label reveal">About</p>
+          <div className="about-grid">
+            <div className="reveal">
+              <h2 className="about-heading">About Me</h2>
+              <p className="about-text" style={{ marginTop: 16 }}>
+                {`I'm a developer passionate about building feature rich experiences.
+                Particularly, I love building products that serve people and communities.
+                Whether it's building the `}
+                <a href="https://epsilon.stuysu.org/" target="_blank" rel="noreferrer">everything</a>
+                {` app for my school, tools for my organizations,
+                or `}
+                <a href="https://github.com/randall-sim/fish-net" target="_blank" rel="noreferrer">breaking</a>
+                {` other people's projects, I hope to do some cool things and meet some cool people
+                along the way :)`}
+              </p>
+              <div style={{ display: 'flex', gap: 8, marginTop: 24, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.75rem', padding: '4px 12px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 9999, color: '#888' }}>Distributed Systems</span>
+                <span style={{ fontSize: '0.75rem', padding: '4px 12px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 9999, color: '#888' }}>Artificial Intelligence</span>
+                <span style={{ fontSize: '0.75rem', padding: '4px 12px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 9999, color: '#888' }}>Startups</span>
+              </div>
+              <div style={{ display: 'flex', gap: 10, marginTop: 20, flexWrap: 'wrap' }}>
+                <a href="mailto:randallsim.me@gmail.com" className="site-btn site-btn-outline" aria-label="Email" style={{ padding: '7px 10px' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                </a>
+                <a href="https://www.youtube.com/@randallsim" target="_blank" rel="noreferrer" className="site-btn site-btn-outline" aria-label="YouTube" style={{ padding: '7px 10px' }}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                </a>
+              </div>
+            </div>
+            <div className="about-photo-wrap reveal reveal-delay">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/me.jpg" alt="Randall Sim" />
+            </div>
+          </div>
         </div>
       </div>
-      <div className=" bg-white py-20 px-4 md:px-8 mb-12">
-        <motion.div 
-          className="max-w-6xl mx-auto"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <div className="flex flex-col md:flex-row gap-12 items-center">
-            <motion.div 
-              className="flex-1"
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <motion.h2 
-                className="text-4xl md:text-5xl font-bold mb-8 text-black text-center md:text-left"
-              >
-                About Me
-              </motion.h2>
-              <motion.div
-                className="space-y-6 text-lg md:text-xl text-black text-center md:text-left"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                <p>
-                  { `I'm a developer passionate about building feature rich experiences. 
-                  Particularly, I love building products that serve people and communities. 
-                  Whether it's building the `} 
-                  <Link href="https://epsilon.stuysu.org/" target="_blank" className="text-blue-500 underline">everything</Link> 
-                  { ` app for my school, tools for my organizations, 
-                  or `} 
-                  <Link href="https://github.com/randysim/fish-net" target="_blank" className="text-blue-500 underline">breaking</Link> {` other people's projects, I hope to do some cool things and meet some cool people
-                  along the way :)`}
-                </p>
-              </motion.div>
-            </motion.div>
 
-            <motion.div 
-              className="flex-1 w-full"
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <div className="relative w-[85%] mx-auto aspect-square rounded-2xl overflow-hidden bg-gray-100 shadow-2xl">
-                <Image
-                  src="/me.jpg"
-                  alt="Randy Sim"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </motion.div>
+      <div className="section-divider" />
+
+      {/* ── Experience ── */}
+      <div id="experience">
+        <div className="site-section">
+          <p className="section-label reveal">Experience</p>
+          <div className="reveal">
+            <Experience />
           </div>
-        </motion.div>
+        </div>
       </div>
-      <div className="min-h-screen bg-white pb-32 md:pb-20 px-4 md:px-8">
-        <motion.h2 
-          className="text-4xl md:text-5xl font-bold text-black text-center mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          Projects
-        </motion.h2>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <Projects />
-        </motion.div>
+
+      <div className="section-divider" />
+
+      {/* ── Projects ── */}
+      <div id="projects">
+        <div className="site-section">
+          <p className="section-label reveal">Projects</p>
+          <div className="reveal">
+            <Projects />
+          </div>
+        </div>
       </div>
-    </div>
+
+      <div className="section-divider" />
+
+      {/* ── Footer ── */}
+      <footer className="site-footer">
+        <span className="footer-copy">© {new Date().getFullYear()} Randall Sim</span>
+        <div className="footer-links">
+          <a href="https://github.com/randall-sim" target="_blank" rel="noreferrer" className="footer-link">GitHub</a>
+          <a href="https://www.linkedin.com/in/r-sim/" target="_blank" rel="noreferrer" className="footer-link">LinkedIn</a>
+          <a href="mailto:randallsim.me@gmail.com" className="footer-link">Email</a>
+        </div>
+      </footer>
+    </>
   );
 }

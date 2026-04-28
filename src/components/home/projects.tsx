@@ -1,248 +1,133 @@
 "use client";
 
-import React, { useEffect, useId, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { useOutsideClick } from "@/hooks/use-outside-click";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
-export default function Projects() {
-  const [active, setActive] = useState<(typeof cards)[number] | boolean | null>(
-    null
-  );
-  const id = useId();
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setActive(false);
-      }
-    }
-
-    if (active && typeof active === "object") {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [active]);
-
-  useOutsideClick(ref, () => setActive(null));
-
-  return (
-    <>
-      <AnimatePresence>
-        {active && typeof active === "object" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 h-full w-full z-10"
-          />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {active && typeof active === "object" ? (
-          <div className="fixed inset-0  grid place-items-center z-[100]">
-            <motion.button
-              key={`button-${active.title}-${id}`}
-              layout
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                opacity: 1,
-              }}
-              exit={{
-                opacity: 0,
-                transition: {
-                  duration: 0.05,
-                },
-              }}
-              className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-white rounded-full h-6 w-6"
-              onClick={() => setActive(null)}
-            >
-              <CloseIcon />
-            </motion.button>
-            <motion.div
-              layoutId={`card-${active.title}-${id}`}
-              ref={ref}
-              className="w-full max-w-[500px]  h-full md:h-fit md:max-h-[90%]  flex flex-col bg-white dark:bg-neutral-900 sm:rounded-3xl overflow-hidden"
-            >
-              <motion.div layoutId={`image-${active.title}-${id}`}>
-                <img
-                  width={200}
-                  height={200}
-                  src={active.src}
-                  alt={active.title}
-                  className="w-full h-80 lg:h-80 sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                />
-              </motion.div>
-
-              <div>
-                <div className="flex justify-between items-start p-4">
-                  <div className="">
-                    <motion.h3
-                      layoutId={`title-${active.title}-${id}`}
-                      className="font-medium text-neutral-700 dark:text-neutral-200 text-base"
-                    >
-                      {active.title}
-                    </motion.h3>
-                    <motion.p
-                      layoutId={`description-${active.description}-${id}`}
-                      className="text-neutral-600 dark:text-neutral-400 text-base"
-                    >
-                      {active.description}
-                    </motion.p>
-                  </div>
-
-                  <motion.a
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    href={active.ctaLink}
-                    target="_blank"
-                    className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
-                  >
-                    {active.ctaText}
-                  </motion.a>
-                </div>
-                <div className="pt-4 relative px-4">
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-neutral-600 text-xs md:text-sm lg:text-base h-40 md:h-fit pb-10 flex flex-col items-start gap-4 overflow-auto dark:text-neutral-400 [mask:linear-gradient(to_bottom,white,white,transparent)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch]"
-                  >
-                    {typeof active.content === "function"
-                      ? active.content()
-                      : active.content}
-                  </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        ) : null}
-      </AnimatePresence>
-      <ul className="max-w-2xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 items-start gap-4">
-        {cards.map((card, index) => (
-          <motion.div
-            layoutId={`card-${card.title}-${id}`}
-            key={card.title}
-            onClick={() => setActive(card)}
-            className="p-4 flex flex-col  hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-xl cursor-pointer"
-          >
-            <div className="flex gap-4 flex-col  w-full">
-              <motion.div layoutId={`image-${card.title}-${id}`}>
-                <img
-                  width={100}
-                  height={100}
-                  src={card.src}
-                  alt={card.title}
-                  className="h-60 w-full  rounded-lg object-cover object-top"
-                />
-              </motion.div>
-              <div className="flex justify-center items-center flex-col">
-                <motion.h3
-                  layoutId={`title-${card.title}-${id}`}
-                  className="font-medium text-neutral-800 dark:text-neutral-200 text-center md:text-left text-base"
-                >
-                  {card.title}
-                </motion.h3>
-                <motion.p
-                  layoutId={`description-${card.description}-${id}`}
-                  className="text-neutral-600 dark:text-neutral-400 text-center md:text-left text-base"
-                >
-                  {card.description}
-                </motion.p>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </ul>
-    </>
-  );
-}
-
-const CloseIcon = () => {
-  return (
-    <motion.svg
-      initial={{
-        opacity: 0,
-      }}
-      animate={{
-        opacity: 1,
-      }}
-      exit={{
-        opacity: 0,
-        transition: {
-          duration: 0.05,
-        },
-      }}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4 text-black"
-    >
-      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <path d="M18 6l-12 12" />
-      <path d="M6 6l12 12" />
-    </motion.svg>
-  );
-};
-
-const cards = [
+const PROJECTS = [
   {
-    description: "Everything app for Stuyvesant",
     title: "epsilon.stuysu.org",
+    description: "Everything app for Stuyvesant",
     src: "/epsilon.png",
     ctaText: "Visit",
     ctaLink: "https://epsilon.stuysu.org/",
-    content: () => {
-      return (
-        <p>
-          { `I founded Epsilon, Stuyvesant's premier app for students, faculty, and staff to manage 400+ 
-          student organizations, reserve rooms, and run all school-wide events. We serve over 3,300 users on a 
-          daily basis and have become an integral part of the school's infrastructure. Built with React, Typescript, and Supabase.` }
-        </p>
-      );
-    },
+    content: "I founded Epsilon, Stuyvesant's premier app for students, faculty, and staff to manage 400+ student organizations, reserve rooms, and run all school-wide events. We serve over 3,300 users on a daily basis and have become an integral part of the school's infrastructure. Built with React, TypeScript, and Supabase.",
   },
   {
-    description: "Convert news into engaging videos",
     title: "News To Go",
+    description: "Convert news into engaging videos",
     src: "/news-to-go.png",
     ctaText: "GitHub",
-    ctaLink: "https://github.com/randysim/news-to-go",
-    content: () => {
-      return (
-        <p>
-          { `Built News To Go, a tool that converts news articles into engaging videos. Personally used this to acquire 100+ followers for an instagram account. Engineered a scalable video pipeline using Selenium, Ollama, and MoviePy. Built a job queue system with multithreading to support concurrent user requests on single-machine infrastructure.` }
-        </p>
-      );
-    },
+    ctaLink: "https://github.com/randall-sim/news-to-go",
+    content: "Built News To Go, a tool that converts news articles into engaging videos. Personally used this to acquire 3,000+ followers for an Instagram account. Engineered a scalable video pipeline using Selenium, Ollama, and MoviePy. Built a job queue system with multithreading to support concurrent user requests on single-machine infrastructure.",
   },
   {
+    title: "internships.dev",
     description: "Be the first to every internship",
-    title: "opportunity.dev",
     src: "/opportunity-dev.png",
     ctaText: "Visit",
-    ctaLink: "https://opportunity.dev",
-    content: () => {
-      return (
-        <p>
-          { `Built opportunity.dev, a platform that helps students find and apply for internships. The platform aggregates internship listings from various sources and provides personalized recommendations based on user preferences. It uses a decentralized worker system to consistently refresh listings and makes sure our users are the first to know about every opportunity.` }
-        </p>
-      )
-    }
-  }
+    ctaLink: "https://internships.dev",
+    content: "Built internships.dev, a platform that helps students find and apply for internships. The platform aggregates listings from various sources and provides personalized recommendations. It uses a decentralized worker system to consistently refresh listings so users are the first to know about every opportunity.",
+  },
 ];
+
+type Project = typeof PROJECTS[number];
+
+function ArrowIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 17L17 7M7 7h10v10"/>
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+  );
+}
+
+function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
+  const [closing, setClosing] = useState(false);
+
+  const triggerClose = () => {
+    setClosing(true);
+    setTimeout(() => { setClosing(false); onClose(); }, 230);
+  };
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setClosing(true);
+        setTimeout(() => { setClosing(false); onClose(); }, 230);
+      }
+    };
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = "hidden";
+    document.body.style.paddingRight = scrollbarWidth + "px";
+    const nav = document.querySelector(".site-nav") as HTMLElement | null;
+    if (nav) nav.style.paddingRight = (24 + scrollbarWidth) + "px";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+      if (nav) nav.style.paddingRight = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [onClose, setClosing]);
+
+  return (
+    <div className={`modal-overlay${closing ? " closing" : ""}`} onClick={triggerClose}>
+      <div className="modal-card" onClick={e => e.stopPropagation()}>
+        <button className="modal-close" onClick={triggerClose}><CloseIcon /></button>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={project.src} alt={project.title} className="modal-img" />
+        <div className="modal-body">
+          <div className="modal-row">
+            <div>
+              <div className="modal-title">{project.title}</div>
+              <div className="modal-desc">{project.description}</div>
+            </div>
+            <a href={project.ctaLink} target="_blank" rel="noreferrer" className="site-btn site-btn-solid" style={{ flexShrink: 0 }}>
+              {project.ctaText}
+            </a>
+          </div>
+          <div className="modal-content">{project.content}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Projects() {
+  const [active, setActive] = useState<Project | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  return (
+    <>
+      <div className="projects-grid">
+        {PROJECTS.map(p => (
+          <div key={p.title} className="project-card" onClick={() => setActive(p)}>
+            <div className="project-card-img-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={p.src} alt={p.title} className="project-card-img" />
+            </div>
+            <div className="project-card-body">
+              <div className="project-card-title">{p.title}</div>
+              <div className="project-card-desc">{p.description}</div>
+            </div>
+            <div className="project-card-arrow"><ArrowIcon /></div>
+          </div>
+        ))}
+      </div>
+
+      {mounted && active && createPortal(
+        <ProjectModal project={active} onClose={() => setActive(null)} />,
+        document.body
+      )}
+    </>
+  );
+}
