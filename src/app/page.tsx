@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Particles } from "@/components/magicui/particles";
+import { Minus, Maximize2, X } from 'lucide-react';
 import Projects from '@/components/home/projects';
 import Experience from '@/components/home/experience';
 
 const PHRASES = [
-  { pre: 'I ', hl: 'build', post: ' products for people.' },
-  { pre: 'I ', hl: 'founded', post: ' Epsilon @ Stuyvesant.' },
-  { pre: 'I ', hl: 'ship', post: ' things that matter.' },
-  { pre: 'I ', hl: 'love', post: ' hard problems.' },
+  { pre: 'founded ', hl: 'Epsilon', post: '.' },
+  { pre: 'co-founded ', hl: 'internships.dev', post: '.' },
+  { pre: 'CS @ ', hl: 'Brown', post: '.' },
+  { pre: 'SWE intern @ ', hl: 'Microsoft', post: '.' },
 ];
 
 function useCyclingText() {
@@ -54,23 +54,11 @@ export default function Home() {
     <>
       {/* ── Hero ── */}
       <section className="hero" id="hero">
-        <Particles
-          className="absolute inset-0 z-0"
-          quantity={isMobile ? 20 : 70}
-          staticity={50}
-          ease={80}
-          size={0.8}
-          color="#ffffff"
-        />
-        <div className="hero-grid" />
+<div className="hero-grid" />
 
         <div className="hero-split">
           {/* Left */}
           <div className="hero-left">
-            <div className="hero-badge">
-              <span className="hero-badge-dot" />
-              Open to opportunities
-            </div>
             <div className="hero-role">Software Engineer</div>
             <h1 className="hero-name">
               <span className="word"><span>Randall</span></span>
@@ -129,31 +117,28 @@ export default function Home() {
           <div className="hero-right">
             <div className="terminal-card">
               <div className="terminal-header">
-                <div className="terminal-dots">
-                  <div className="terminal-dot red" />
-                  <div className="terminal-dot yellow" />
-                  <div className="terminal-dot green" />
-                </div>
                 <span className="terminal-title">randallsim — projects</span>
+                <div className="terminal-dots">
+                  <Minus size={11} />
+                  <Maximize2 size={11} />
+                  <X size={11} />
+                </div>
               </div>
               <div className="terminal-body">
                 <div><span className="t-prompt">$ </span><span className="t-cmd">randall status</span></div>
                 <div className="t-spacer" />
 
                 <div className="terminal-status-row">
-                  <div className="status-dot live" />
                   <span className="status-name">epsilon.stuysu.org</span>
-                  <span className="status-tag live">live</span>
+                  <span className="t-dim"> - live</span>
                 </div>
                 <div className="terminal-status-row">
-                  <div className="status-dot live" />
                   <span className="status-name">internships.dev</span>
-                  <span className="status-tag live">live</span>
+                  <span className="t-dim"> - live</span>
                 </div>
                 <div className="terminal-status-row">
-                  <div className="status-dot shipped" />
                   <span className="status-name">news-to-go</span>
-                  <span className="status-tag">shipped</span>
+                  <span className="t-dim"> - shipped</span>
                 </div>
 
                 <div className="t-spacer" />

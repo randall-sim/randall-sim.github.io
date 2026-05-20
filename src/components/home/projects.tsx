@@ -23,7 +23,8 @@ const PROJECTS = [
   {
     title: "internships.dev",
     description: "Be the first to every internship",
-    src: "/opportunity-dev.png",
+    src: "/internshipsdev.png",
+    imgPosition: "top left",
     ctaText: "Visit",
     ctaLink: "https://internships.dev",
     content: "Built internships.dev, a platform that helps students find and apply for internships. The platform aggregates listings from various sources and provides personalized recommendations. It uses a decentralized worker system to consistently refresh listings so users are the first to know about every opportunity.",
@@ -82,7 +83,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
       <div className="modal-card" onClick={e => e.stopPropagation()}>
         <button className="modal-close" onClick={triggerClose}><CloseIcon /></button>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={project.src} alt={project.title} className="modal-img" />
+        <img src={project.src} alt={project.title} className="modal-img" style={project.imgPosition ? { objectPosition: project.imgPosition } : undefined} />
         <div className="modal-body">
           <div className="modal-row">
             <div>
@@ -113,7 +114,7 @@ export default function Projects() {
           <div key={p.title} className="project-card" onClick={() => setActive(p)}>
             <div className="project-card-img-wrap">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.src} alt={p.title} className="project-card-img" />
+              <img src={p.src} alt={p.title} className="project-card-img" style={p.imgPosition ? { objectPosition: p.imgPosition } : undefined} />
             </div>
             <div className="project-card-body">
               <div className="project-card-title">{p.title}</div>

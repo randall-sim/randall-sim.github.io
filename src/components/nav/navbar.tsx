@@ -4,7 +4,6 @@ export default function Navbar() {
   return (
     <nav className="site-nav">
       <a href="#hero" className="nav-logo">
-        <span className="nav-logo-dot" />
         Randall Sim
       </a>
       <div className="nav-links">
