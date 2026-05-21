@@ -9,10 +9,6 @@ export default function Experience() {
             <div>
               <div className="timeline-company">
                 Microsoft
-                <span className="timeline-badge">
-                  <span className="timeline-badge-dot" />
-                  Upcoming
-                </span>
               </div>
               <div className="timeline-role">Software Engineer Intern</div>
             </div>
