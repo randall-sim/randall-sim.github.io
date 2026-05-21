@@ -6,9 +6,9 @@ import Projects from '@/components/home/projects';
 import Experience from '@/components/home/experience';
 
 const PHRASES = [
+  { pre: 'CS @ ', hl: 'Brown', post: '.' },
   { pre: 'founded ', hl: 'Epsilon', post: '.' },
   { pre: 'co-founded ', hl: 'internships.dev', post: '.' },
-  { pre: 'CS @ ', hl: 'Brown', post: '.' },
   { pre: 'SWE intern @ ', hl: 'Microsoft', post: '.' },
 ];
 
